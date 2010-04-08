@@ -1,0 +1,3 @@
+Just a simple Python module by which you can access dbus methods without making troubles with the dbus related stuff.
+
+I've mainly started coding this module because I think it could be used as a simple interface for a rapid access to NeoPhysis libs which provide some methods via dbus. It uses dbus Introspection to get dbus' methods details.
