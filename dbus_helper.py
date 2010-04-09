@@ -1,5 +1,27 @@
 #!/usr/bin/env python
 
+ #####################################################################
+#                                                                     #
+#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE              #
+#                    Version 2, December 2004                         #
+#                                                                     #
+# Copyright (C) 2010 Thomas Bertani <sylar@anche.no>                  #
+#                                                                     #
+# Everyone is permitted to copy and distribute verbatim or modified   #
+# copies of this license document, and changing it is allowed as long #
+# as the name is changed.                                             #
+#                                                                     #
+#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE              #
+#   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION   #
+#                                                                     #
+#  0. You just DO WHAT THE FUCK YOU WANT TO.                          #
+#                                                                     #
+ #####################################################################
+#                                                                     #
+#     DO WHAT YOU WANT CAUSE A PIRATE IS FREE, YOU ARE A PIRATE!      #
+#                                                                     #
+ #####################################################################
+
 from dbus import SystemBus, Array
 import xml.etree.ElementTree as et
 from new import instancemethod
