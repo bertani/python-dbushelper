@@ -33,26 +33,23 @@ class Helper:
             def f(x, *args):
                 try:
                     return x.__utils__['obj'].get_dbus_method(name, path)(*args)
-                except TypeError: return "Wrong arguments passed.."
+                except TypeError: raise Exception("Wrong arguments passed..")
             f.func_name = name
-            f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(arg))
+            f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(args))
             setattr(self, name, instancemethod(f, self, self.__class__))
         self.__utils__['bus'] = SystemBus()
         if not path in self.__utils__['bus'].list_names():
-            print "Cannot load path '%s'" % path
-            return
+            raise Exception("Cannot load path '%s'" % path)
         self.__utils__['obj'] = self.__utils__['bus'].get_object(path, "/")
-        xml = self.__utils__['obj'].Introspect()
-        xml = et.fromstring(xml)
+        try: xml = et.fromstring(self.__utils__['obj'].Introspect())
+        except: raise Exception("Introspection error")
         res = None
         for interface in xml.findall("interface"):
-            res = interface if interface.get("name") == path else None
-            if res: break
+            while not res: res = interface if interface.get("name") == path else None
         for children in res._children:
             method_name = ""
             args = []
             method_name = children.get("name")
             for c in children._children:
-                if c.tag == "arg":
-                    if c.get("direction") == "in": args.append(c.get("name"))
+                if (c.tag == "arg") and (c.get("direction") == "in"): args.append(c.get("name"))
             addMethod(method_name, args)
