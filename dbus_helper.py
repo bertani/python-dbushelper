@@ -29,17 +29,13 @@ from new import instancemethod
 class Helper:
     __utils__ = {}
     def __init__(self, path):
-        def addMethod(name, signature="sv", args=()):
+        def addMethod(name, args=()):
             def f(x, *args):
                 try:
-                    res = x.__utils__['obj'].get_dbus_method(name, path)(*args)
-                    return res
+                    return x.__utils__['obj'].get_dbus_method(name, path)(*args)
                 except TypeError: return "Wrong arguments passed.."
             f.func_name = name
-            doc = "Usage: %s(" % f.func_name
-            for arg in args: doc += "%s," % arg
-            doc = doc[:-1] + ")"
-            f.func_doc = doc
+            f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(arg))
             setattr(self, name, instancemethod(f, self, self.__class__))
         self.__utils__['bus'] = SystemBus()
         if not path in self.__utils__['bus'].list_names():
@@ -53,11 +49,10 @@ class Helper:
             res = interface if interface.get("name") == path else None
             if res: break
         for children in res._children:
-            method_name, signature = "", ""
+            method_name = ""
             args = []
             method_name = children.get("name")
             for c in children._children:
                 if c.tag == "arg":
                     if c.get("direction") == "in": args.append(c.get("name"))
-                    else: signature = c.get("type")
-            addMethod(method_name, signature, args)
+            addMethod(method_name, args)
