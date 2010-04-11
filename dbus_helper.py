@@ -22,8 +22,8 @@
 #                                                                     #
  #####################################################################
 
-from dbus import SystemBus, Array
-import xml.etree.ElementTree as et
+from dbus import SystemBus
+from xml.etree.ElementTree import fromstring
 from new import instancemethod
 
 class Helper:
@@ -41,13 +41,12 @@ class Helper:
         if not path in self.__utils__['bus'].list_names():
             raise Exception("Cannot load path '%s'" % path)
         self.__utils__['obj'] = self.__utils__['bus'].get_object(path, "/")
-        try: xml = et.fromstring(self.__utils__['obj'].Introspect())
+        try: xml = fromstring(self.__utils__['obj'].Introspect())
         except: raise Exception("Introspection error")
         res = None
         for interface in xml.findall("interface"):
             while not res: res = interface if interface.get("name") == path else None
         for children in res._children:
-            method_name = ""
             args = []
             method_name = children.get("name")
             for c in children._children:
