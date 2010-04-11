@@ -28,8 +28,8 @@ from new import instancemethod
 
 class Helper:
     '''
-    This helper lets you simply call dbus methods as if they are simply provided by this class.
-    The usage is very simple, you have just to call the constructor with the complete path (or a part of it if it's unique) of the dbus interface whose methods you are interested in.
+    This helper lets you simply call dbus methods as if they are provided by this class.
+    The usage is Helper(path), so you have just to call the constructor with the complete path (or a part of it if it's unique) of the dbus interface whose methods you are interested in.
     
     Example: Helper("org.neophysis.nwm") or just Helper("nwm")
     '''
