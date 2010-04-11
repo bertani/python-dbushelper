@@ -27,6 +27,12 @@ from xml.etree.ElementTree import fromstring
 from new import instancemethod
 
 class Helper:
+    '''
+    This helper lets you simply call dbus methods as if they are simply provided by this class.
+    The usage is very simple, you have just to call the constructor with the complete path (or a part of it if it's unique) of the dbus interface whose methods you are interested in.
+    
+    Example: Helper("org.neophysis.nwm") or just Helper("nwm")
+    '''
     __utils__ = {}
     def __init__(self, path):
         def addMethod(name, args=()):
@@ -38,8 +44,12 @@ class Helper:
             f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(args))
             setattr(self, name, instancemethod(f, self, self.__class__))
         self.__utils__['bus'] = SystemBus()
-        if not path in self.__utils__['bus'].list_names():
-            raise Exception("Cannot load path '%s'" % path)
+        r = []
+        for i in self.__utils__['bus'].list_names():
+            r.append(i) if (i.find(path) > -1) else None
+        if not len(r): raise Exception("Cannot find any matching interface as '%s'" % path)
+        elif len(r) == 1: path = r[0]
+        else: raise Exception("The path specified is ambiguos: %s maching interfaces found" % len(r))
         self.__utils__['obj'] = self.__utils__['bus'].get_object(path, "/")
         try: xml = fromstring(self.__utils__['obj'].Introspect())
         except: raise Exception("Introspection error")
