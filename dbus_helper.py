@@ -55,6 +55,7 @@ class Helper:
         except: raise Exception("Introspection error")
         for interface in xml.findall("interface"):
             self.__utils__['interface'] = interface if interface.get("name").startswith(path) else None
+        if not self.__utils__['interface']: raise Exception("Cannot find any interface which matchs the '%s' path" % path)
         for children in self.__utils__['interface']._children:
             args = []
             method_name = children.get("name")
