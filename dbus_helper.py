@@ -41,7 +41,7 @@ class Helper:
                     return x.__utils__['obj'].get_dbus_method(name, self.__utils__['interface'].get("name"))(*args)
                 except TypeError: raise Exception("Wrong arguments passed..")
             f.func_name = name
-            f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(args))
+            f.func_doc = "Usage: %s(%s)" % (f.func_name or "f", ','.join(arg if arg else "unknown" for arg in args))
             setattr(self, name, instancemethod(f, self, self.__class__))
         self.__utils__['bus'] = SystemBus()
         r = []
