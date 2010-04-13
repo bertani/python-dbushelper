@@ -22,7 +22,7 @@
 #                                                                     #
  #####################################################################
 
-from dbus import SystemBus
+from dbus import SystemBus, Interface
 from xml.etree.ElementTree import fromstring
 from new import instancemethod
 
@@ -38,7 +38,7 @@ class Helper:
         def addMethod(name, args=()):
             def f(x, *args):
                 try:
-                    return x.__utils__['obj'].get_dbus_method(name, path)(*args)
+                    return x.__utils__['obj'].get_dbus_method(name, self.__utils__['interface'].get("name"))(*args)
                 except TypeError: raise Exception("Wrong arguments passed..")
             f.func_name = name
             f.func_doc = "Usage: %s(%s)" % (f.func_name, ','.join(args))
@@ -51,12 +51,11 @@ class Helper:
         elif len(r) == 1: path = r[0]
         else: raise Exception("The path specified is ambiguos: %s maching interfaces found" % len(r))
         self.__utils__['obj'] = self.__utils__['bus'].get_object(path, "/")
-        try: xml = fromstring(self.__utils__['obj'].Introspect())
+        try: xml = fromstring(Interface(self.__utils__['obj'], "org.freedesktop.DBus.Introspectable").Introspect())
         except: raise Exception("Introspection error")
-        res = None
         for interface in xml.findall("interface"):
-            while not res: res = interface if interface.get("name") == path else None
-        for children in res._children:
+            self.__utils__['interface'] = interface if interface.get("name").startswith(path) else None
+        for children in self.__utils__['interface']._children:
             args = []
             method_name = children.get("name")
             for c in children._children:
