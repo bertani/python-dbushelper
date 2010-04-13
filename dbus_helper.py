@@ -34,7 +34,7 @@ class Helper:
     Example: Helper("org.neophysis.nwm") or just Helper("nwm")
     '''
     __utils__ = {}
-    def __init__(self, path):
+    def __init__(self, path, obj="/"):
         def addMethod(name, args=()):
             def f(x, *args):
                 try:
@@ -50,7 +50,7 @@ class Helper:
         if not len(r): raise Exception("Cannot find any matching interface as '%s'" % path)
         elif len(r) == 1: path = r[0]
         else: raise Exception("The path specified is ambiguos: %s maching interfaces found" % len(r))
-        self.__utils__['obj'] = self.__utils__['bus'].get_object(path, "/")
+        self.__utils__['obj'] = self.__utils__['bus'].get_object(path, obj)
         try: xml = fromstring(Interface(self.__utils__['obj'], "org.freedesktop.DBus.Introspectable").Introspect())
         except: raise Exception("Introspection error")
         for interface in xml.findall("interface"):
