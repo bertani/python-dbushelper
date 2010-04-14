@@ -33,7 +33,7 @@ class Helper:
     
     Example: Helper("org.neophysis.nwm") or just Helper("nwm")
     '''
-    __utils__ = {}
+    __utils__ = {'bus': None, 'obj': None, 'interface': None}
     def __init__(self, path, obj="/"):
         def addMethod(name, args=()):
             def f(x, *args):
@@ -41,7 +41,7 @@ class Helper:
                     return x.__utils__['obj'].get_dbus_method(name, self.__utils__['interface'].get("name"))(*args)
                 except TypeError: raise Exception("Wrong arguments passed..")
             f.func_name = name
-            f.func_doc = "Usage: %s(%s)" % (f.func_name or "f", ','.join(arg if arg else "unknown" for arg in args))
+            f.func_doc = "Usage: %s(%s)" % (f.func_name or "f", ', '.join(arg if arg else chr(ord('a')+n) for n, arg in enumerate(args)))
             setattr(self, name, instancemethod(f, self, self.__class__))
         self.__utils__['bus'] = SystemBus()
         r = []
@@ -54,10 +54,11 @@ class Helper:
         try: xml = fromstring(Interface(self.__utils__['obj'], "org.freedesktop.DBus.Introspectable").Introspect())
         except: raise Exception("Introspection error")
         for interface in xml.findall("interface"):
-            self.__utils__['interface'] = interface if interface.get("name").startswith(path) else None
+            self.__utils__['interface'] = interface if interface.get("name").startswith(path) else None if not self.__utils__['interface'] else interface
         if not self.__utils__['interface']: raise Exception("Cannot find any interface which matchs the '%s' path" % path)
         for children in self.__utils__['interface']._children:
             args = []
+            if children.tag != "method": continue
             method_name = children.get("name")
             for c in children._children:
                 if (c.tag == "arg") and (c.get("direction") == "in"): args.append(c.get("name"))
